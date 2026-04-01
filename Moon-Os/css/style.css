@@ -1,0 +1,213 @@
+:root {
+    --bg-desktop: #0B1021;     
+    --taskbar-bg: rgba(15, 23, 42, 0.75); 
+    --text-main: #E0E7FF;      
+    --accent: #3B82F6;         
+    --window-border: rgba(255, 255, 255, 0.1); 
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    user-select: none;
+}
+
+body {
+    background-color: var(--bg-desktop);
+    color: var(--text-main);
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#desktop {
+    flex-grow: 1;
+    position: relative;
+    background-color: var(--bg-desktop);
+    background-image: radial-gradient(circle at center, #172033 0%, var(--bg-desktop) 100%);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.moon-background {
+    width: 45vh;
+    height: 45vh;
+    border-radius: 50%;
+    box-shadow: inset -40px -40px 0 0 rgba(224, 231, 255, 0.05), 0 0 60px rgba(224, 231, 255, 0.02); 
+    position: absolute;
+    pointer-events: none;
+}
+
+#desktop-icons {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none; 
+}
+
+.desktop-icon {
+    position: absolute;
+    width: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-main);
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+    text-shadow: 0px 2px 4px rgba(0,0,0,0.8);
+    padding: 8px 5px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    pointer-events: auto; 
+    /* Transición suave para cuando se ajusta a la cuadrícula */
+    transition: background 0.2s, border 0.2s, top 0.2s ease-out, left 0.2s ease-out;
+}
+
+.desktop-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.desktop-icon svg {
+    margin-bottom: 6px;
+    filter: drop-shadow(0px 3px 5px rgba(0,0,0,0.6));
+}
+
+.desktop-icon-name {
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.2;
+}
+
+/* --- BARRA DE TAREAS CORREGIDA --- */
+#taskbar {
+    height: 48px;
+    background: var(--taskbar-bg);
+    backdrop-filter: blur(20px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* Quitamos el padding derecho (10px -> 0) para pegar el botón al borde */
+    padding: 0 0 0 10px; 
+    border-top: 1px solid var(--window-border);
+    z-index: 9999;
+}
+
+#start-button {
+    height: 38px;
+    width: 38px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+#start-button:hover { background: rgba(255, 255, 255, 0.15); }
+#start-button:active { transform: scale(0.95); }
+
+#open-apps {
+    flex-grow: 1;
+    display: flex;
+    padding: 0 15px;
+    gap: 8px;
+    align-items: center;
+}
+
+#system-tray-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+#system-tray {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 15px;
+    cursor: pointer;
+    height: 100%;
+    transition: background 0.2s;
+    letter-spacing: 0.5px;
+}
+
+#system-tray:hover { background: rgba(255,255,255,0.1); }
+#clock-time { font-size: 14px; font-weight: 600; }
+
+#show-desktop-btn {
+    width: 14px; /* Un poco más grueso */
+    height: 100%;
+    border-left: 1px solid rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#show-desktop-btn:hover { background: rgba(255,255,255,0.2); }
+
+/* --- MENÚS --- */
+.context-menu {
+    position: absolute;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid var(--window-border);
+    border-radius: 6px;
+    backdrop-filter: blur(20px);
+    color: var(--text-main);
+    z-index: 10000;
+    padding: 5px 0;
+    display: none;
+    min-width: 220px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+}
+
+.context-item {
+    padding: 8px 15px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative; 
+}
+
+.context-item:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.context-item .arrow { font-size: 10px; color: #94A3B8; }
+.context-item:hover .arrow { color: white; }
+
+.submenu {
+    display: none !important; 
+    position: absolute;
+    top: -5px;
+    left: 100%;
+    margin-left: 2px;
+}
+
+.has-submenu:hover > .submenu { display: block !important; }
+
+.context-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 5px 0;
+}

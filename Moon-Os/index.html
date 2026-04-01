@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon OS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/window-manager.css">
+    <style>
+        /* Estilo visual de selección en el escritorio */
+        .desktop-icon.selected {
+            background: rgba(255, 255, 255, 0.15);
+            outline: 1px dotted rgba(255, 255, 255, 0.6);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="desktop">
+        <div class="moon-background"></div>
+        <div id="desktop-icons"></div>
+    </div>
+
+    <div id="desktop-context-menu" class="context-menu">
+        <div class="context-item" onclick="alert('Ver: En desarrollo')"><span>Ver</span> <span class="arrow">▶</span></div>
+        <div class="context-item" onclick="alert('Ordenar: En desarrollo')"><span>Ordenar por</span> <span class="arrow">▶</span></div>
+        <div class="context-item" onclick="location.reload()">Actualizar</div>
+        <div class="context-divider"></div>
+        <div class="context-item" id="desktop-menu-paste" onclick="MoonVFS.pasteFile('desktop')">Pegar</div>
+        <div class="context-divider"></div>
+        <div class="context-item has-submenu">
+            <span>Nuevo</span> <span class="arrow">▶</span>
+            <div class="submenu context-menu">
+                <div class="context-item" onclick="inlineCreateOnDesktop('folder')">📁 Carpeta</div>
+                <div class="context-divider"></div>
+                <div class="context-item" onclick="inlineCreateOnDesktop('txt')">📄 Documento de texto (.txt)</div>
+                <div class="context-item" onclick="inlineCreateOnDesktop('write')">📝 Documento Moon Write</div>
+                <div class="context-divider"></div>
+                <div class="context-item" onclick="inlineCreateOnDesktop('grid')">📊 Documento Grid (.grid)</div>
+                <div class="context-item" onclick="inlineCreateOnDesktop('slide')">📽️ Presentación Slide (.slide)</div>
+            </div>
+        </div>
+        <div class="context-divider"></div>
+        <div class="context-item" onclick="openSettings()">Personalizar</div>
+    </div>
+
+    <div id="icon-context-menu" class="context-menu">
+        <div class="context-item" id="icon-menu-open">Abrir</div>
+        <div class="context-divider"></div>
+        <div class="context-item" id="icon-menu-copy">Copiar</div>
+        <div class="context-item" id="icon-menu-cut">Cortar</div>
+        <div class="context-divider"></div>
+        <div class="context-item" id="icon-menu-rename">Cambiar nombre</div>
+        <div class="context-item" id="icon-menu-delete" style="color: #EF4444;">Eliminar</div>
+    </div>
+
+    <div id="taskbar-context-menu" class="context-menu">
+        <div class="context-item" onclick="openTaskManager()">Administrador de tareas</div>
+        <div class="context-divider"></div>
+        <div class="context-item" id="toggle-taskbar-lock">Bloquear la barra de tareas</div>
+    </div>
+
+    <div id="start-app-context-menu" class="context-menu">
+        <div class="context-item" id="pin-to-taskbar-btn">Fijar a la barra de tareas</div>
+        <div class="context-divider"></div>
+        <div class="context-item" id="add-to-desktop-btn">Añadir al escritorio</div>
+    </div>
+
+    <div id="calendar-panel" class="hidden">
+        <div id="calendar-header">
+            <span id="cal-time">00:00</span>
+            <span id="cal-date">Lunes, 1 de Enero</span>
+        </div>
+        <div id="calendar-body">
+            <div style="text-align: center; padding: 20px; color: #94A3B8;">Calendario interactivo en construcción</div>
+        </div>
+    </div>
+
+    <div id="start-menu" class="hidden">
+        <div class="menu-side-panel">
+            <div class="side-top">
+                <div class="side-btn profile-btn" title="Mi Perfil">
+                    <div id="start-profile-pic" style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--accent); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; color: white;">M</div>
+                </div>
+            </div>
+            <div class="side-bottom">
+                <div class="side-btn" title="Configuración" onclick="openSettings()">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/></svg>
+                </div>
+                <div class="side-btn" title="Apagar" onclick="shutdownOS()">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M7.5 1v7h1V1h-1z"/><path d="M3 8.812a4.999 4.999 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812z"/></svg>
+                </div>
+            </div>
+        </div>
+        <div class="menu-app-list">
+            <div class="menu-letter">A</div>
+            <div class="app-item" data-appid="taskmanager" onclick="openTaskManager()"><span>Admin. de Tareas</span></div>
+            
+            <div class="menu-letter">B</div>
+            <div class="app-item" data-appid="notepad" onclick="openNotepad()"><span>Bloc de Notas</span></div>
+            <div class="app-item" data-appid="minesweeper" onclick="openMinesweeper()"><span>Buscaminas</span></div>
+            
+            <div class="menu-letter">C</div>
+            <div class="app-item" data-appid="calc" onclick="openCalculator()"><span>Calculadora</span></div>
+            <div class="app-item" data-appid="calendar" onclick="openCalendarApp()"><span>Calendario</span></div>
+            <div class="app-item" data-appid="cmd" onclick="openCMD()"><span>CMD</span></div>
+            <div class="app-item" data-appid="settings" onclick="openSettings()"><span>Configuración</span></div>
+            
+            <div class="menu-letter">E</div>
+            <div class="app-item" data-appid="moondrive" onclick="openMoonDrive()"><span>Explorador de Archivos</span></div>
+            
+            <div class="menu-letter">G</div>
+            <div class="app-item" data-appid="grid" onclick="openGrid()"><span>Grid</span></div>
+            
+            <div class="menu-letter">N</div>
+            <div class="app-item" data-appid="browser" onclick="openBrowser()"><span>Navegador</span></div>
+            
+            <div class="menu-letter">S</div>
+            <div class="app-item" data-appid="slide" onclick="openSlide()"><span>Slide</span></div>
+            <div class="app-item" data-appid="snake" onclick="openSnake()"><span>Snake Game</span></div>
+            
+            <div class="menu-letter">W</div>
+            <div class="app-item" data-appid="write" onclick="openWrite()"><span>Write</span></div>
+        </div>
+    </div>
+
+    <div id="taskbar">
+        <div id="start-button" title="Menú Moon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="#E0E7FF"/>
+            </svg>
+        </div>
+        <div id="open-apps"></div>
+        <div id="system-tray-container">
+            <div id="system-tray" title="Calendario">
+                <div id="clock-time">00:00</div>
+                <div id="clock-date" style="font-size: 10px; color: #94A3B8;">01/01/2026</div>
+            </div>
+            <div id="show-desktop-btn" onclick="WindowManager.minimizeAll()" title="Mostrar escritorio"></div>
+        </div>
+    </div>
+
+    <script src="js/system/vfs.js"></script>
+    <script src="js/system/windows.js"></script>
+    
+    <script src="js/apps/cmd.js"></script>
+    <script src="js/apps/notepad.js"></script>
+    <script src="js/apps/write.js"></script>
+    <script src="js/apps/calculator.js"></script>
+    <script src="js/apps/browser.js"></script>
+    <script src="js/apps/settings.js"></script>
+    <script src="js/apps/taskmanager.js"></script>
+    <script src="js/apps/moondrive.js"></script>
+    <script src="js/apps/trash.js"></script>
+    <script src="js/apps/imageviewer.js"></script>
+    
+    <script src="js/apps/calendar_app.js"></script>
+    <script src="js/apps/grid.js"></script>
+    <script src="js/apps/slide.js"></script>
+    <script src="js/apps/snake.js"></script>
+    <script src="js/apps/minesweeper.js"></script>
+    
+    <script src="js/system/core.js"></script>
+</body>
+</html>
